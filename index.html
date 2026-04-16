@@ -784,19 +784,16 @@
         }
       });
 
-      document.getElementById('stok-atk-section').classList.remove('hidden');
-      document.getElementById('database-barang-section').classList.remove('hidden');
-
-      if (sectionId !== 'stok-atk-section' && sectionId !== 'database-barang-section') {
-        const target = document.getElementById(sectionId);
-        if (target) {
-          target.classList.remove('hidden');
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.classList.remove('hidden');
+        target.scrollIntoView({ behavior: 'smooth' });
       }
     }
 
     window.onload = function () {
+      document.getElementById('stok-atk-section').classList.remove('hidden');
+      document.getElementById('database-barang-section').classList.remove('hidden');
       tampilkanBarang();
       tampilkanKaryawan();
       updateSelectBarang();
