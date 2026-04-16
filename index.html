@@ -26,7 +26,7 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <h3 class="text-2xl font-bold text-green-700">Histori Pemasukan Stok</h3>
         <div class="flex flex-wrap gap-3">
-          <input type="month" id="filterHistoriMasuk" class="border rounded-xl px-4 py-3" onchange="tampilkanHistoriMasuk()">
+          <input type="month" id="filterHistoriMasuk" class="border rounded-xl px-4 py-3 text-slate-800 bg-white" onchange="tampilkanHistoriMasuk()">
           <input type="text" id="searchHistoriMasuk" placeholder="Cari nama barang" class="border rounded-xl px-4 py-3" onkeyup="tampilkanHistoriMasuk()">
           <button onclick="exportHistoriMasuk()" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700">
             Export XLSX
@@ -51,7 +51,7 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <h3 class="text-2xl font-bold text-red-700">Histori Pengeluaran Stok</h3>
         <div class="flex flex-wrap gap-3">
-          <input type="month" id="filterHistoriKeluar" class="border rounded-xl px-4 py-3" onchange="tampilkanHistoriKeluar()">
+          <input type="month" id="filterHistoriKeluar" class="border rounded-xl px-4 py-3 text-slate-800 bg-white" onchange="tampilkanHistoriKeluar()">
           <input type="text" id="searchHistoriKeluar" placeholder="Cari nama barang atau pengambil" class="border rounded-xl px-4 py-3" onkeyup="tampilkanHistoriKeluar()">
           <button onclick="exportHistoriKeluar()" class="bg-red-600 text-white px-4 py-3 rounded-xl hover:bg-red-700">
             Export XLSX
@@ -729,7 +729,9 @@
 
       tbody.innerHTML = '';
 
-      historiMasuk.forEach(item => {
+      [...historiMasuk]
+        .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
+        .forEach(item => {
         const cocokKeyword = item.namaBarang.toLowerCase().includes(keyword);
         const cocokBulan = !bulan || item.tanggal.startsWith(bulan);
 
@@ -764,7 +766,9 @@
 
       tbody.innerHTML = '';
 
-      historiKeluar.forEach(item => {
+      [...historiKeluar]
+        .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
+        .forEach(item => {
         const cocokKeyword =
           item.namaBarang.toLowerCase().includes(keyword) ||
           item.pengambil.toLowerCase().includes(keyword);
