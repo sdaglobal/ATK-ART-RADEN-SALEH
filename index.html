@@ -142,12 +142,31 @@
         <div>
           <h4 class="text-xl font-bold text-red-600 mb-4">Pengeluaran Stok</h4>
           <div class="space-y-4">
-            <input type="text" id="barangKeluar" placeholder="Nama Barang" class="w-full border rounded-xl p-3">
-            <input type="number" id="jumlahKeluar" placeholder="Jumlah Keluar" class="w-full border rounded-xl p-3">
-            <input type="text" placeholder="Departemen" class="w-full border rounded-xl p-3">
-            <input type="text" placeholder="Nama Pengambil / Karyawan" class="w-full border rounded-xl p-3">
-            <button onclick="simpanPengeluaran()" class="w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700">Simpan Pengeluaran</button>
+            <input type="date" id="tanggalKeluar" class="w-full border rounded-xl p-3">
+
+            <div id="listPengeluaranBarang" class="space-y-4">
+              <div class="grid md:grid-cols-4 gap-4 border rounded-2xl p-4 bg-slate-50 pengeluaran-item">
+                <input list="masterBarangList" type="text" class="namaBarangKeluar w-full border rounded-xl p-3" placeholder="Cari atau pilih barang">
+                <input type="number" class="jumlahBarangKeluar w-full border rounded-xl p-3" placeholder="Jumlah Keluar">
+                <input type="text" class="departemenKeluar w-full border rounded-xl p-3" placeholder="Departemen">
+                <div class="flex gap-2">
+                  <input type="text" class="pengambilKeluar w-full border rounded-xl p-3" placeholder="Nama Pengambil">
+                  <button type="button" onclick="hapusBarisPengeluaran(this)" class="bg-red-600 text-white px-4 rounded-xl hover:bg-red-700">
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="tambahBarisPengeluaran()" class="w-full bg-slate-600 text-white py-3 rounded-xl hover:bg-slate-700">
+              Tambah Barang Lagi
+            </button>
+
+            <button onclick="simpanPengeluaran()" class="w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700">
+              Simpan Pengeluaran
+            </button>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -406,30 +425,99 @@
       alert('Pemasukan stok berhasil disimpan');
     }
 
+    function tambahBarisPengeluaran() {
+      const container = document.getElementById('listPengeluaranBarang');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'grid md:grid-cols-4 gap-4 border rounded-2xl p-4 bg-slate-50 pengeluaran-item';
+      wrapper.innerHTML = `
+        <input list="masterBarangList" type="text" class="namaBarangKeluar w-full border rounded-xl p-3" placeholder="Cari atau pilih barang">
+        <input type="number" class="jumlahBarangKeluar w-full border rounded-xl p-3" placeholder="Jumlah Keluar">
+        <input type="text" class="departemenKeluar w-full border rounded-xl p-3" placeholder="Departemen">
+        <div class="flex gap-2">
+          <input type="text" class="pengambilKeluar w-full border rounded-xl p-3" placeholder="Nama Pengambil">
+          <button type="button" onclick="hapusBarisPengeluaran(this)" class="bg-red-600 text-white px-4 rounded-xl hover:bg-red-700">
+            Hapus
+          </button>
+        </div>
+      `;
+
+      container.appendChild(wrapper);
+    }
+
+    function hapusBarisPengeluaran(button) {
+      const item = button.closest('.pengeluaran-item');
+      const totalItem = document.querySelectorAll('.pengeluaran-item').length;
+
+      if (totalItem <= 1) {
+        alert('Minimal harus ada satu baris pengeluaran');
+        return;
+      }
+
+      item.remove();
+    }
+
     function simpanPengeluaran() {
-      const namaBarang = document.getElementById('barangKeluar').value;
-      const jumlahKeluar = parseInt(document.getElementById('jumlahKeluar').value);
+      const namaBarangInputs = document.querySelectorAll('.namaBarangKeluar');
+      const jumlahBarangInputs = document.querySelectorAll('.jumlahBarangKeluar');
 
-      const barang = barangList.find(item => item.nama.toLowerCase() === namaBarang.toLowerCase());
+      let berhasil = false;
 
-      if (!barang) {
-        alert('Barang tidak ditemukan');
-        return;
+      for (let index = 0; index < namaBarangInputs.length; index++) {
+        const namaBarang = namaBarangInputs[index].value.trim();
+        const jumlahKeluar = parseInt(jumlahBarangInputs[index].value);
+
+        if (!namaBarang || isNaN(jumlahKeluar) || jumlahKeluar <= 0) {
+          continue;
+        }
+
+        const barang = barangList.find(item => {
+          const namaMaster = item.nama.trim().toLowerCase();
+          const namaInput = namaBarang.trim().toLowerCase();
+
+          return (
+            namaMaster === namaInput ||
+            namaInput.includes(namaMaster) ||
+            namaMaster.includes(namaInput)
+          );
+        });
+
+        if (!barang) {
+          continue;
+        }
+
+        if (Number(barang.sisaStok || 0) < jumlahKeluar) {
+          continue;
+        }
+
+        barang.stokKeluar = Number(barang.stokKeluar || 0) + jumlahKeluar;
+        barang.sisaStok = Number(barang.sisaStok || 0) - jumlahKeluar;
+        berhasil = true;
       }
 
-      if (barang.sisaStok < jumlahKeluar) {
-        alert('Sisa stok tidak mencukupi');
+      if (!berhasil) {
+        alert('Tidak ada data pengeluaran yang valid');
         return;
       }
-
-      barang.stokKeluar += jumlahKeluar;
-      barang.sisaStok -= jumlahKeluar;
 
       localStorage.setItem('masterBarang', JSON.stringify(barangList));
       tampilkanBarang();
 
-      document.getElementById('barangKeluar').value = '';
-      document.getElementById('jumlahKeluar').value = '';
+      document.getElementById('listPengeluaranBarang').innerHTML = `
+        <div class="grid md:grid-cols-4 gap-4 border rounded-2xl p-4 bg-slate-50 pengeluaran-item">
+          <input list="masterBarangList" type="text" class="namaBarangKeluar w-full border rounded-xl p-3" placeholder="Cari atau pilih barang">
+          <input type="number" class="jumlahBarangKeluar w-full border rounded-xl p-3" placeholder="Jumlah Keluar">
+          <input type="text" class="departemenKeluar w-full border rounded-xl p-3" placeholder="Departemen">
+          <div class="flex gap-2">
+            <input type="text" class="pengambilKeluar w-full border rounded-xl p-3" placeholder="Nama Pengambil">
+            <button type="button" onclick="hapusBarisPengeluaran(this)" class="bg-red-600 text-white px-4 rounded-xl hover:bg-red-700">
+              Hapus
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('tanggalKeluar').value = '';
 
       alert('Pengeluaran stok berhasil disimpan');
     }
