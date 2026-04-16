@@ -791,16 +791,23 @@
         'histori-keluar-section'
       ];
 
-      sections.forEach(function(id) {
-        const el = document.getElementById(id);
+      for (let i = 0; i < sections.length; i++) {
+        const el = document.getElementById(sections[i]);
         if (el) {
           el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.height = '0';
+          el.style.overflow = 'hidden';
         }
-      });
+      }
 
       const target = document.getElementById(sectionId);
       if (target) {
         target.style.display = 'block';
+        target.style.visibility = 'visible';
+        target.style.height = 'auto';
+        target.style.overflow = 'visible';
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
