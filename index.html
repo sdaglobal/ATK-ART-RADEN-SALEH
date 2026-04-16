@@ -787,19 +787,15 @@
       semuaSection.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-          element.classList.add('hidden');
+          element.style.display = 'none';
         }
       });
 
       const target = document.getElementById(sectionId);
 
       if (target) {
-        console.log('Menampilkan section:', sectionId);
         target.style.display = 'block';
-        target.classList.remove('hidden');
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
 
@@ -860,28 +856,19 @@
     }
 
     window.onload = function () {
-      const semuaSection = [
-        'stok-atk-section',
-        'database-barang-section',
-        'master-barang-section',
-        'master-karyawan-section',
-        'histori-masuk-section',
-        'histori-keluar-section'
-      ];
-
-      semuaSection.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.classList.add('hidden');
-        }
-      });
-
       tampilkanBarang();
       tampilkanKaryawan();
       updateSelectBarang();
       updateDatalistKaryawan();
       tampilkanHistoriMasuk();
       tampilkanHistoriKeluar();
+
+      document.getElementById('stok-atk-section').style.display = 'none';
+      document.getElementById('database-barang-section').style.display = 'none';
+      document.getElementById('master-barang-section').style.display = 'none';
+      document.getElementById('master-karyawan-section').style.display = 'none';
+      document.getElementById('histori-masuk-section').style.display = 'none';
+      document.getElementById('histori-keluar-section').style.display = 'none';
       updateDashboardDepartemen();
     }
   </script>
