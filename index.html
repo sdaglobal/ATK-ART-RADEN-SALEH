@@ -89,6 +89,10 @@
         </label>
       </div>
 
+      <div class="mt-6 mb-4">
+        <input type="text" id="searchKaryawan" placeholder="Cari nama karyawan atau departemen" class="border rounded-xl px-4 py-3 w-full md:w-96" onkeyup="tampilkanKaryawan()">
+      </div>
+
       <div class="overflow-x-auto mt-8">
         <table class="w-full border border-slate-200 rounded-xl overflow-hidden">
           <thead class="bg-slate-100">
@@ -216,12 +220,21 @@
 
     function tampilkanKaryawan() {
       const tbody = document.getElementById('tabelKaryawan');
+      const keyword = document.getElementById('searchKaryawan') ? document.getElementById('searchKaryawan').value.toLowerCase() : '';
+
       tbody.innerHTML = '';
 
-      karyawanList.forEach((karyawan, index) => {
+      let nomor = 1;
+
+      karyawanList.forEach((karyawan) => {
+        const cocok =
+          karyawan.nama.toLowerCase().includes(keyword) ||
+          karyawan.departemen.toLowerCase().includes(keyword);
+
+        if (!cocok) return;
         tbody.innerHTML += `
           <tr class="border-b hover:bg-slate-50">
-            <td class="p-3">${index + 1}</td>
+            <td class="p-3">${nomor++}</td>
             <td class="p-3">${karyawan.nama}</td>
             <td class="p-3">${karyawan.departemen}</td>
           </tr>
