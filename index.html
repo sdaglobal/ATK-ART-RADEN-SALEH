@@ -33,7 +33,7 @@
               <th class="p-3 text-left">Jumlah Masuk</th>
             </tr>
           </thead>
-          <tbody id="tabelHistoriMasuk"></tbody>
+          <tbody id="tabelHistoriMasuk" class="text-slate-800"></tbody>
         </table>
       </div>
     </div>
@@ -51,7 +51,7 @@
               <th class="p-3 text-left">Departemen</th>
             </tr>
           </thead>
-          <tbody id="tabelHistoriKeluar"></tbody>
+          <tbody id="tabelHistoriKeluar" class="text-slate-800"></tbody>
         </table>
       </div>
     </div>
@@ -314,7 +314,7 @@
 
         if (!cocok) return;
         tbody.innerHTML += `
-          <tr class="border-b hover:bg-slate-50">
+          <tr class="border-b hover:bg-slate-50 text-slate-800">
             <td class="p-3">${nomor++}</td>
             <td class="p-3">${karyawan.nama}</td>
             <td class="p-3">${karyawan.departemen}</td>
@@ -641,7 +641,7 @@
         totalKeluar += barang.stokKeluar;
 
         tbody.innerHTML += `
-          <tr class="border-b hover:bg-slate-50">
+          <tr class="border-b hover:bg-slate-50 text-slate-800">
             <td class="p-3">${nomor++}</td>
             <td class="p-3">${barang.kode}</td>
             <td class="p-3">${barang.nama}</td>
@@ -710,7 +710,7 @@
 
       historiMasuk.forEach(item => {
         tbody.innerHTML += `
-          <tr class="border-b hover:bg-slate-50">
+          <tr class="border-b hover:bg-slate-50 text-slate-800">
             <td class="p-3">${item.tanggal}</td>
             <td class="p-3">${item.namaBarang}</td>
             <td class="p-3">${item.jumlahMasuk}</td>
@@ -727,7 +727,7 @@
 
       historiKeluar.forEach(item => {
         tbody.innerHTML += `
-          <tr class="border-b hover:bg-slate-50">
+          <tr class="border-b hover:bg-slate-50 text-slate-800">
             <td class="p-3">${item.tanggal}</td>
             <td class="p-3">${item.namaBarang}</td>
             <td class="p-3">${item.jumlahKeluar}</td>
