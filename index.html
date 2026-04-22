@@ -785,9 +785,15 @@ renderGrafikPengeluaran();
 updateDepartemenTerbanyak();
 updateAtkTerbanyak();
 
-alert('Master barang berhasil diimport dari file XLSX');
+await loadBarangDariSupabase();
+
+setTimeout(() => {
+  alert('Master barang berhasil diimport dari file XLSX');
+}, 500);
+
         } catch (error) {
           alert('File XLSX gagal dibaca');
+          console.log(error);
         }
       };
 
