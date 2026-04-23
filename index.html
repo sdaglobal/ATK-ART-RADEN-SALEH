@@ -599,7 +599,6 @@ alert('Master karyawan berhasil diimport');
       `;
 
       container.appendChild(wrapper);
-      updateSisaStokRealtime();
     }
       function updateSelectBarang() {
       let datalist = document.getElementById('masterBarangList');
@@ -748,7 +747,7 @@ simpanHistoriMasukKeSupabase(dataMasuk);
       `;
 
       container.appendChild(wrapper);
-      updateSisaStokRealtime();
+setTimeout(updateSisaStokRealtime, 100);
     }
 
     function hapusBarisPengeluaran(button) {
@@ -1459,10 +1458,18 @@ function updateDepartemenTerbanyak() {
     const namaInput = row.querySelector('.namaBarangKeluar');
     const jumlahInput = row.querySelector('.jumlahBarangKeluar');
     const sisaInput = row.querySelector('.sisaStokRealtime');
+    
+    const namaBaru = namaInput.cloneNode(true);
+    const jumlahBaru = jumlahInput.cloneNode(true);
 
+    namaInput.replaceWith(namaBaru);
+    jumlahInput.replaceWith(jumlahBaru);
+
+    const namaFix = row.querySelector('.namaBarangKeluar');
+    const jumlahFix = row.querySelector('.jumlahBarangKeluar');
     function hitung() {
-      const nama = namaInput.value.trim().toLowerCase();
-      const jumlah = parseInt(jumlahInput.value) || 0;
+  const nama = namaFix.value.trim().toLowerCase();
+  const jumlah = parseInt(jumlahFix.value) || 0;
 
       const barang = barangList.find(item =>
         item.nama.trim().toLowerCase() === nama
@@ -1477,15 +1484,19 @@ function updateDepartemenTerbanyak() {
 
       if (sisa < 0) {
         sisaInput.value = 'Stok kurang!';
-        jumlahInput.classList.add('border-red-500');
+        jumlahFix.classList.add('border-red-500');
       } else {
         sisaInput.value = sisa;
-        jumlahInput.classList.remove('border-red-500');
+        jumlahFix.classList.remove('border-red-500');
       }
     }
 
-    namaInput.addEventListener('input', hitung);
-    jumlahInput.addEventListener('input', hitung);
+namaFix.addEventListener('input', hitung);
+namaFix.addEventListener('change', hitung);
+
+jumlahFix.addEventListener('input', hitung);
+jumlahFix.addEventListener('change', hitung);
+    hitung();
   });
 }
   function updateAtkTerbanyak() {
