@@ -642,6 +642,10 @@ alert('Master karyawan berhasil diimport');
       const jumlahBarangInputs = document.querySelectorAll('.jumlahBarangMasuk');
 
       let berhasil = false;
+      // 🔥 RESET WARNA ERROR
+jumlahBarangInputs.forEach(input => {
+  input.classList.remove('border-red-500');
+});
 
       for (let index = 0; index < namaBarangInputs.length; index++) {
         const namaBarang = namaBarangInputs[index].value.trim();
@@ -784,13 +788,14 @@ simpanHistoriMasukKeSupabase(dataMasuk);
     const jumlahKeluar = parseInt(jumlahBarangInputs[index].value);
 
     if (!namaBarang || isNaN(jumlahKeluar) || jumlahKeluar <= 0) {
+      jumlahBarangInputs[index].classList.add('border-red-500');
       alert('Semua input pengeluaran harus diisi dengan benar');
       return;
     }
 
     const barang = barangList.find(item =>
-      item.nama.toLowerCase().includes(namaBarang.toLowerCase())
-    );
+  item.nama.trim().toLowerCase() === namaBarang.trim().toLowerCase()
+);
 
     if (!barang) {
       alert(`Barang "${namaBarang}" tidak ditemukan`);
@@ -1466,11 +1471,11 @@ function updateDepartemenTerbanyak() {
     const sisaInput = row.querySelector('.sisaStokRealtime');
 
     function hitung() {
-      const nama = namaInput.value.toLowerCase().trim();
+      const nama = namaInput.value.trim().toLowerCase();
       const jumlah = parseInt(jumlahInput.value) || 0;
 
       const barang = barangList.find(item =>
-        item.nama.toLowerCase().includes(nama)
+        item.nama.trim().toLowerCase() === nama
       );
 
       if (!barang) {
@@ -1480,7 +1485,13 @@ function updateDepartemenTerbanyak() {
 
       const sisa = Number(barang.sisaStok || 0) - jumlah;
 
-      sisaInput.value = sisa >= 0 ? sisa : 'Stok kurang!';
+      if (sisa < 0) {
+        sisaInput.value = 'Stok kurang!';
+        jumlahInput.classList.add('border-red-500');
+      } else {
+        sisaInput.value = sisa;
+        jumlahInput.classList.remove('border-red-500');
+      }
     }
 
     namaInput.addEventListener('input', hitung);
