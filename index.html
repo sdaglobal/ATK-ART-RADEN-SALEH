@@ -247,6 +247,12 @@ let historiKeluar = JSON.parse(localStorage.getItem('historiKeluar')) || [];
 const supabaseUrl = 'https://wlnibcoqspxwmylkyolk.supabase.co';
 const supabaseKey = 'sb_publishable_lycr_Pk_EfTZxPmUJ3xsag_isf7AEwS';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+    function ambilKodeBarang(namaInput) {
+  const option = [...document.querySelectorAll('#masterBarangList option')]
+    .find(opt => opt.value.toLowerCase().includes(namaInput.toLowerCase()));
+
+  return option ? option.dataset.kode : null;
+}
     async function simpanKaryawanKeSupabase(karyawan) {
   const { error } = await supabaseClient
     .from('master_karyawan')
@@ -612,7 +618,9 @@ alert('Master karyawan berhasil diimport');
       datalist.innerHTML = '';
 
       barangList.forEach(barang => {
-        datalist.innerHTML += `<option value="${barang.nama}">${barang.nama} (${barang.satuan})</option>`;
+        datalist.innerHTML += `<option value="${barang.nama}" data-kode="${barang.kode}">
+  ${barang.nama} (${barang.satuan})
+</option>`;
       });
     }
 
@@ -646,8 +654,15 @@ jumlahBarangInputs.forEach(input => {
           continue;
         }
 
-        const barang = barangList.find(item =>
-  item.nama.trim().toLowerCase() === namaBarang.trim().toLowerCase()
+        const kode = ambilKodeBarang(namaBarang);
+
+if (!kode) {
+  alert("Pilih barang dari daftar!");
+  return;
+}
+
+const barang = barangList.find(item =>
+  item.kode === kode
 );
 
         if (!barang) {
@@ -777,8 +792,15 @@ setTimeout(updateSisaStokRealtime, 100);
       return;
     }
 
-    const barang = barangList.find(item =>
-  item.nama.trim().toLowerCase() === namaBarang.trim().toLowerCase()
+    const kode = ambilKodeBarang(namaBarang);
+
+if (!kode) {
+  alert("Pilih barang dari daftar!");
+  return;
+}
+
+const barang = barangList.find(item =>
+  item.kode === kode
 );
 
     if (!barang) {
@@ -800,8 +822,15 @@ setTimeout(updateSisaStokRealtime, 100);
           continue;
         }
 
-        const barang = barangList.find(item =>
-  item.nama.trim().toLowerCase() === namaBarang.trim().toLowerCase()
+        const kode = ambilKodeBarang(namaBarang);
+
+if (!kode) {
+  alert("Pilih barang dari daftar!");
+  return;
+}
+
+const barang = barangList.find(item =>
+  item.kode === kode
 );
 
         if (!barang) {
@@ -1471,9 +1500,11 @@ function updateDepartemenTerbanyak() {
   const nama = namaFix.value.trim().toLowerCase();
   const jumlah = parseInt(jumlahFix.value) || 0;
 
-      const barang = barangList.find(item =>
-        item.nama.trim().toLowerCase() === nama
-      );
+      const kode = ambilKodeBarang(nama);
+
+const barang = barangList.find(item =>
+  item.kode === kode
+);
 
       if (!barang) {
         sisaInput.value = '-';
