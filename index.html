@@ -457,6 +457,48 @@ async function loadHistoriKeluarDariSupabase() {
   tampilkanLaporanDepartemen();
   }
 }
+    function exportLaporanDepartemen() {
+  const filterDept = document.getElementById('filterDepartemen').value;
+  const keyword = document.getElementById('searchBarangDepartemen').value.toLowerCase();
+
+  const data = {};
+
+  historiKeluar.forEach(item => {
+    if (filterDept && item.departemen !== filterDept) return;
+
+    const key = item.departemen + '|' + item.namaBarang;
+
+    if (!data[key]) {
+      data[key] = {
+        Departemen: item.departemen,
+        Nama_Barang: item.namaBarang,
+        Total: 0
+      };
+    }
+
+    data[key].Total += Number(item.jumlahKeluar || 0);
+  });
+
+  let hasil = Object.values(data);
+
+  // filter search
+  hasil = hasil.filter(item =>
+    item.Nama_Barang.toLowerCase().includes(keyword)
+  );
+
+  // sort terbesar
+  hasil.sort((a, b) => b.Total - a.Total);
+
+  // export
+  const worksheet = XLSX.utils.json_to_sheet(hasil);
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan Departemen');
+  const sekarang = new Date();
+const tanggal = sekarang.toISOString().split('T')[0];
+
+XLSX.writeFile(workbook, `laporan-departemen-${tanggal}.xlsx`);
+}
       async function simpanBarang() {
   const kode = document.getElementById('kodeBarang').value;
   const nama = document.getElementById('namaBarang').value;
@@ -1719,9 +1761,16 @@ updateAtkTerbanyak();
       </div>
     </div>
 <div id="laporan-departemen-section" class="bg-white rounded-3xl shadow-lg p-8 mt-10 hidden">
-  <h3 class="text-2xl font-bold text-indigo-700 mb-6">
+  <div class="flex justify-between items-center mb-6">
+  <h3 class="text-2xl font-bold text-indigo-700">
     List Pengambilan per Departemen
   </h3>
+
+  <button onclick="exportLaporanDepartemen()" 
+    class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700">
+    Export XLSX
+  </button>
+</div>
 
   <div class="flex gap-3 mb-6">
     <select id="filterDepartemen" class="border rounded-xl px-4 py-3" onchange="tampilkanLaporanDepartemen()">
