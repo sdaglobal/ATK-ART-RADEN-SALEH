@@ -148,6 +148,11 @@ class="bg-indigo-600 text-white px-5 py-3 rounded-xl hover:bg-indigo-700">
           <div class="space-y-4">
             <input type="date" id="tanggalMasuk" class="w-full border rounded-xl p-3">
 
+<div class="grid md:grid-cols-2 gap-4">
+  <input type="text" id="namaSupplier" placeholder="Nama Supplier" class="w-full border rounded-xl p-3">
+  <input type="text" id="nomorBTB" placeholder="Nomor BTB" class="w-full border rounded-xl p-3">
+</div>
+
             <div id="listPemasukanBarang" class="space-y-4">
               <datalist id="masterBarangList"></datalist>
               <div class="grid md:grid-cols-2 gap-4 border rounded-2xl p-4 bg-slate-50 pemasukan-item">
@@ -273,7 +278,9 @@ async function simpanHistoriMasukKeSupabase(data) {
     .insert([{
       tanggal: data.tanggal,
       nama_barang: data.namaBarang,
-      jumlah_masuk: data.jumlahMasuk
+      jumlah_masuk: data.jumlahMasuk,
+      supplier: data.supplier,
+      nomor_btb: data.nomorBTB
     }]);
 
   if (error) {
@@ -419,10 +426,12 @@ async function loadBarangDariSupabase() {
 
   if (!error && data) {
     historiMasuk = data.map(item => ({
-      tanggal: item.tanggal,
-      namaBarang: item.nama_barang,
-      jumlahMasuk: item.jumlah_masuk
-    }));
+  tanggal: item.tanggal,
+  namaBarang: item.nama_barang,
+  jumlahMasuk: item.jumlah_masuk,
+  supplier: item.supplier || '-',
+  nomorBTB: item.nomor_btb || '-'
+}));
 
     localStorage.setItem('historiMasuk', JSON.stringify(historiMasuk));
     tampilkanHistoriMasuk();
@@ -682,86 +691,101 @@ alert('Master karyawan berhasil diimport');
     }
 
     async function simpanPemasukan() {
-      const namaBarangInputs = document.querySelectorAll('.namaBarangMasuk');
-      const jumlahBarangInputs = document.querySelectorAll('.jumlahBarangMasuk');
+  const namaBarangInputs = document.querySelectorAll('.namaBarangMasuk');
+  const jumlahBarangInputs = document.querySelectorAll('.jumlahBarangMasuk');
 
-      let berhasil = false;
-      // 🔥 RESET WARNA ERROR
-jumlahBarangInputs.forEach(input => {
-  input.classList.remove('border-red-500');
-});
+  const supplier = document.getElementById('namaSupplier').value.trim();
+  const nomorBTB = document.getElementById('nomorBTB').value.trim();
+  const tanggal = document.getElementById('tanggalMasuk').value;
 
-      for (let index = 0; index < namaBarangInputs.length; index++) {
-        const namaBarang = namaBarangInputs[index].value.trim();
-        const jumlahMasuk = parseInt(jumlahBarangInputs[index].value);
+  if (!tanggal) {
+    alert("Tanggal wajib diisi!");
+    return;
+  }
 
-        if (!namaBarang || isNaN(jumlahMasuk) || jumlahMasuk <= 0) {
-          continue;
-        }
+  let berhasil = false;
 
-        const kode = ambilKodeBarang(namaBarang);
+  jumlahBarangInputs.forEach(input => {
+    input.classList.remove('border-red-500');
+  });
 
-if (!kode) {
-  alert("Pilih barang dari daftar!");
-  return;
-}
+  for (let index = 0; index < namaBarangInputs.length; index++) {
+    const namaBarang = namaBarangInputs[index].value.trim();
+    const jumlahMasuk = parseInt(jumlahBarangInputs[index].value);
 
-const barang = barangList.find(item =>
-  item.kode === kode
-);
-
-        if (!barang) {
-          continue;
-        }
-
-        barang.stokMasuk = Number(barang.stokMasuk || 0) + jumlahMasuk;
-        barang.sisaStok = Number(barang.sisaStok || 0) + jumlahMasuk;
-
-await updateBarangKeSupabase(barang);
-
-        const dataMasuk = {
-  tanggal: document.getElementById('tanggalMasuk').value,
-  namaBarang: barang.nama,
-  jumlahMasuk
-};
-
-historiMasuk.push(dataMasuk);
-await simpanHistoriMasukKeSupabase(dataMasuk);
-
-        localStorage.setItem('historiMasuk', JSON.stringify(historiMasuk));
-        berhasil = true;
-      }
-
-      if (!berhasil) {
-        alert('Tidak ada data pemasukan yang valid');
-        return;
-      }
-
-      localStorage.setItem('masterBarang', JSON.stringify(barangList));
-      tampilkanBarang();
-
-      document.getElementById('listPemasukanBarang').innerHTML = `
-        <div class="grid md:grid-cols-2 gap-4 border rounded-2xl p-4 bg-slate-50 pemasukan-item">
-          <div>
-            <input list="masterBarangList" type="text" class="namaBarangMasuk w-full border rounded-xl p-3" placeholder="Cari atau pilih barang">
-          </div>
-          <div>
-            <input type="number" class="jumlahBarangMasuk w-full border rounded-xl p-3" placeholder="Jumlah Masuk">
-          </div>
-        </div>
-      `;
-
-      updateSelectBarang();
-      document.getElementById('tanggalMasuk').value = '';
-
-      tampilkanHistoriMasuk();
-      await loadHistoriMasukDariSupabase();
-      await loadBarangDariSupabase();
-      renderGrafikPengeluaran();
-      updateDepartemenTerbanyak();
-      updateAtkTerbanyak();
-      alert('Pemasukan stok berhasil disimpan');
+    if (!namaBarang || isNaN(jumlahMasuk) || jumlahMasuk <= 0) {
+      continue;
     }
+
+    const kode = ambilKodeBarang(namaBarang);
+
+    if (!kode) {
+      alert("Pilih barang dari daftar!");
+      return;
+    }
+
+    const barang = barangList.find(item => item.kode === kode);
+
+    if (!barang) continue;
+
+    // update stok
+    barang.stokMasuk = Number(barang.stokMasuk || 0) + jumlahMasuk;
+    barang.sisaStok = Number(barang.sisaStok || 0) + jumlahMasuk;
+
+    await updateBarangKeSupabase(barang);
+
+    // 🔥 DATA FINAL MASUK
+    const dataMasuk = {
+      tanggal: tanggal,
+      namaBarang: barang.nama,
+      jumlahMasuk,
+      supplier: supplier || '-',
+      nomorBTB: nomorBTB || '-'
+    };
+
+    historiMasuk.push(dataMasuk);
+    await simpanHistoriMasukKeSupabase(dataMasuk);
+
+    berhasil = true;
+  }
+
+  if (!berhasil) {
+    alert('Tidak ada data pemasukan yang valid');
+    return;
+  }
+
+  localStorage.setItem('masterBarang', JSON.stringify(barangList));
+
+  // RESET FORM
+  document.getElementById('listPemasukanBarang').innerHTML = `
+    <div class="grid md:grid-cols-2 gap-4 border rounded-2xl p-4 bg-slate-50 pemasukan-item">
+      <div>
+        <input list="masterBarangList" type="text" class="namaBarangMasuk w-full border rounded-xl p-3" placeholder="Cari atau pilih barang">
+      </div>
+      <div>
+        <input type="number" class="jumlahBarangMasuk w-full border rounded-xl p-3" placeholder="Jumlah Masuk">
+      </div>
+    </div>
+  `;
+
+  document.getElementById('tanggalMasuk').value = '';
+  document.getElementById('namaSupplier').value = '';
+  document.getElementById('nomorBTB').value = '';
+
+  updateSelectBarang();
+
+  tampilkanBarang();
+  tampilkanHistoriMasuk();
+
+  await loadHistoriMasukDariSupabase();
+  await loadBarangDariSupabase();
+
+  renderGrafikPengeluaran();
+  updateDepartemenTerbanyak();
+  updateAtkTerbanyak();
+
+  alert('Pemasukan stok berhasil disimpan');
+}
 
     function updateDatalistKaryawan() {
       const datalist = document.getElementById('masterKaryawanList');
