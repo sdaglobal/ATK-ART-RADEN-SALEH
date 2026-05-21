@@ -9,6 +9,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+  #grafikSlider::-webkit-scrollbar {
+    display: none;
+  }
+
+  #grafikSlider {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
   </head>
 <body class="min-h-screen bg-slate-100 text-slate-800">
   <header class="bg-blue-700 text-white shadow-lg">
@@ -37,7 +47,8 @@
     </div>
   </section>
         <section class="max-w-7xl mx-auto px-6 pb-10">
-          <div class="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div id="grafikSlider"
+     class="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth">
   <div class="bg-white rounded-3xl shadow-lg p-8 min-w-full snap-center">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
@@ -1997,6 +2008,7 @@ setTimeout(() => {
 }
 
 window.onload = async function () {
+
   document.getElementById('stok-atk-section').classList.add('hidden');
   document.getElementById('database-barang-section').classList.add('hidden');
   document.getElementById('master-barang-section').classList.add('hidden');
@@ -2032,6 +2044,36 @@ updateAtkTerbanyak();
     console.log('ERROR LOAD:', err);
   }
 };
+    // AUTO SLIDE GRAFIK
+let currentSlide = 0;
+
+function autoSlideGrafik() {
+
+  const slider = document.getElementById('grafikSlider');
+
+  if (!slider) return;
+
+  const cards = slider.children;
+
+  if (cards.length === 0) return;
+
+  currentSlide++;
+
+  if (currentSlide >= cards.length) {
+    currentSlide = 0;
+  }
+
+  slider.scrollTo({
+    left: cards[currentSlide].offsetLeft,
+    behavior: 'smooth'
+  });
+}
+
+// AUTO BERJALAN SETIAP 5 DETIK
+setInterval(autoSlideGrafik, 5000);
+    </script>
+</body>
+</html>
 
   </script>
   <section class="max-w-7xl mx-auto px-6 pb-10">
