@@ -55,7 +55,9 @@
 
 <!-- GRAFIK BARANG -->
 <div class="bg-white rounded-3xl shadow-lg p-8 mb-10">
+
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
     <div>
       <h3 class="text-2xl font-bold text-slate-700">
         Grafik Barang Paling Banyak Diambil
@@ -65,13 +67,23 @@
         Menampilkan total pengambilan setiap barang dan departemen terbanyak yang mengambil.
       </p>
     </div>
+
+    <div class="flex flex-wrap gap-3 items-center">
+      <input
+        type="month"
+        id="filterGrafikBarangBulan"
+        class="border rounded-xl px-4 py-3 text-slate-800 bg-white"
+        onchange="renderGrafikBarangDepartemen()"
+      >
+    </div>
+
   </div>
 
   <div class="h-[450px]">
     <canvas id="grafikBarangDepartemen"></canvas>
   </div>
-</div>
 
+</div>
 </section>
       
   <div class="sticky top-0 z-50 bg-slate-100 border-b border-slate-200 shadow-sm">
@@ -1576,7 +1588,14 @@ function renderGrafikBarangDepartemen() {
 
   const dataBarang = {};
 
-  historiKeluar.forEach(item => {
+  const bulanFilter =
+  document.getElementById('filterGrafikBarangBulan')?.value || '';
+
+historiKeluar
+  .filter(item => {
+    return !bulanFilter || item.tanggal.startsWith(bulanFilter);
+  })
+  .forEach(item => {
     const barang = item.namaBarang || '-';
     const dept = item.departemen || 'Tidak Diketahui';
     const jumlah = Number(item.jumlahKeluar || 0);
