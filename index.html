@@ -328,25 +328,27 @@ class="bg-indigo-600 text-white px-5 py-3 rounded-xl hover:bg-indigo-700">
 
 function slideGrafik(direction) {
 
-  const totalData =
-    Object.keys(dataBarangGlobal).length;
+  const totalData = Object.keys(dataBarangGlobal).length;
 
-  const totalSlide =
-    Math.ceil(totalData / maxGrafikPerSlide);
+  if (totalData === 0) return;
+
+  const totalSlide = Math.ceil(totalData / maxGrafikPerSlide);
 
   currentSlide += direction;
 
+  // BATAS MIN
   if (currentSlide < 0) {
     currentSlide = totalSlide - 1;
   }
 
+  // BATAS MAX
   if (currentSlide >= totalSlide) {
     currentSlide = 0;
   }
 
+  // RENDER ULANG CHART
   renderGrafikBarangDepartemen();
 }
-
     let maxGrafikPerSlide = 20;
     let dataBarangGlobal = {};
     
@@ -1696,7 +1698,10 @@ historiKeluar
 
    Object.entries(dataBarang)
   .sort((a, b) => b[1].total - a[1].total)
-  .slice(currentSlide * 20, (currentSlide + 1) * 20)
+  .slice(
+  currentSlide * maxGrafikPerSlide,
+  (currentSlide + 1) * maxGrafikPerSlide
+)
   .forEach(([barang, data]) => {
 
       let deptTerbanyak = '-';
@@ -1739,6 +1744,7 @@ dataBarangGlobal = dataBarang;
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      
       plugins: {
         legend: {
           display: false
@@ -1778,7 +1784,10 @@ dataBarangGlobal = dataBarang;
       }
     }
   });
+  console.log('Slide aktif:', currentSlide);
+console.log('Total barang:', Object.keys(dataBarangGlobal).length);
 }
+    
 function tampilkanLaporanDepartemen() {
   const tbody = document.getElementById('tabelLaporanDepartemen');
   const filterDept = document.getElementById('filterDepartemen').value;
