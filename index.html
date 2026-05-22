@@ -327,10 +327,12 @@ class="bg-indigo-600 text-white px-5 py-3 rounded-xl hover:bg-indigo-700">
     let currentSlide = 0;
 
 function slideGrafik(direction) {
-  const slider = document.getElementById('grafikSlider');
+
+  const totalData =
+    Object.keys(dataBarangGlobal).length;
 
   const totalSlide =
-    slider.querySelectorAll('.snap-center').length;
+    Math.ceil(totalData / maxGrafikPerSlide);
 
   currentSlide += direction;
 
@@ -342,10 +344,7 @@ function slideGrafik(direction) {
     currentSlide = 0;
   }
 
-  slider.scrollTo({
-    left: (slider.clientWidth + 32) * currentSlide,
-    behavior: 'smooth'
-  });
+  renderGrafikBarangDepartemen();
 }
 
     let maxGrafikPerSlide = 20;
@@ -1647,7 +1646,7 @@ function renderGrafikBarangDepartemen() {
   if (!canvas) return;
 
   const dataBarang = {};
-
+  
   const bulanFilter =
   document.getElementById('filterGrafikBarangBulan')?.value || '';
 
@@ -1720,7 +1719,7 @@ historiKeluar
 
       colorIndex++;
     });
-
+dataBarangGlobal = dataBarang;
   if (window.grafikBarangDepartemenChart) {
     window.grafikBarangDepartemenChart.destroy();
   }
