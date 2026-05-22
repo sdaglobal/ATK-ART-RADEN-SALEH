@@ -347,6 +347,10 @@ function slideGrafik(direction) {
     behavior: 'smooth'
   });
 }
+
+    let maxGrafikPerSlide = 20;
+    let dataBarangGlobal = {};
+    
 let barangList = [];
 let karyawanList = [];
 let historiMasuk = [];
@@ -1691,9 +1695,10 @@ historiKeluar
 
   let colorIndex = 0;
 
-  Object.entries(dataBarang)
-    .sort((a, b) => b[1].total - a[1].total)
-    .forEach(([barang, data]) => {
+   Object.entries(dataBarang)
+  .sort((a, b) => b[1].total - a[1].total)
+  .slice(currentSlide * 20, (currentSlide + 1) * 20)
+  .forEach(([barang, data]) => {
 
       let deptTerbanyak = '-';
       let jumlahDept = 0;
