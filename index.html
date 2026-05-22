@@ -47,8 +47,26 @@
     </div>
   </section>
         <section class="max-w-7xl mx-auto px-6 pb-10">
-          <div id="grafikSlider"
-     class="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth">
+          <div class="relative">
+
+  <!-- PANAH KIRI -->
+  <button onclick="slideGrafik(-1)"
+    class="absolute left-2 top-1/2 -translate-y-1/2 z-20
+           bg-blue-500 hover:bg-blue-600
+           text-white w-12 h-12 rounded-xl shadow-lg">
+    ❮
+  </button>
+
+  <!-- PANAH KANAN -->
+  <button onclick="slideGrafik(1)"
+    class="absolute right-2 top-1/2 -translate-y-1/2 z-20
+           bg-blue-500 hover:bg-blue-600
+           text-white w-12 h-12 rounded-xl shadow-lg">
+    ❯
+  </button>
+
+  <div id="grafikSlider"
+       class="flex gap-8 overflow-hidden pb-4 snap-x snap-mandatory scroll-smooth">
   <div class="bg-white rounded-3xl shadow-lg p-8 min-w-full snap-center">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
@@ -96,6 +114,8 @@
   </div>
 
 </div>
+</div>
+            </div>
 </div>
 </section>
       
@@ -2044,37 +2064,36 @@ updateAtkTerbanyak();
     console.log('ERROR LOAD:', err);
   }
 };
-    // AUTO SLIDE GRAFIK
-let currentSlide = 0;
-
-function autoSlideGrafik() {
-
-  const slider = document.getElementById('grafikSlider');
-
-  if (!slider) return;
-
-  const cards = slider.children;
-
-  if (cards.length === 0) return;
-
-  currentSlide++;
-
-  if (currentSlide >= cards.length) {
-    currentSlide = 0;
-  }
-
-  slider.scrollTo({
-    left: cards[currentSlide].offsetLeft,
-    behavior: 'smooth'
-  });
-}
-
-// AUTO BERJALAN SETIAP 5 DETIK
-setInterval(autoSlideGrafik, 5000);
+    
     </script>
 </body>
 </html>
 
+// SLIDE MANUAL GRAFIK
+let currentSlide = 0;
+
+function slideGrafik(direction) {
+  const slider = document.getElementById('grafikSlider');
+
+  if (!slider) return;
+
+  const slides = slider.children.length;
+
+  currentSlide += direction;
+
+  if (currentSlide < 0) {
+    currentSlide = slides - 1;
+  }
+
+  if (currentSlide >= slides) {
+    currentSlide = 0;
+  }
+
+  slider.scrollTo({
+    left: slider.clientWidth * currentSlide,
+    behavior: 'smooth'
+  });
+}
   </script>
   <section class="max-w-7xl mx-auto px-6 pb-10">
     <div id="histori-masuk-section" class="bg-white rounded-3xl shadow-lg p-8 mt-10 scroll-mt-28 hidden">
