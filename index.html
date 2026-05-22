@@ -66,7 +66,7 @@
   </button>
 
   <div id="grafikSlider"
-       class="flex gap-8 overflow-hidden pb-4 snap-x snap-mandatory scroll-smooth">
+     class="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth">
   <div class="bg-white rounded-3xl shadow-lg p-8 min-w-full snap-center">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
@@ -324,6 +324,29 @@ class="bg-indigo-600 text-white px-5 py-3 rounded-xl hover:bg-indigo-700">
   </section>
 
   <script>
+    let currentSlide = 0;
+
+function slideGrafik(direction) {
+  const slider = document.getElementById('grafikSlider');
+
+  const totalSlide =
+    slider.querySelectorAll('.snap-center').length;
+
+  currentSlide += direction;
+
+  if (currentSlide < 0) {
+    currentSlide = totalSlide - 1;
+  }
+
+  if (currentSlide >= totalSlide) {
+    currentSlide = 0;
+  }
+
+  slider.scrollTo({
+    left: (slider.clientWidth + 32) * currentSlide,
+    behavior: 'smooth'
+  });
+}
 let barangList = [];
 let karyawanList = [];
 let historiMasuk = [];
@@ -2090,7 +2113,7 @@ function slideGrafik(direction) {
   }
 
   slider.scrollTo({
-    left: slider.clientWidth * currentSlide,
+    left: (slider.clientWidth + 32) * currentSlide,
     behavior: 'smooth'
   });
 }
