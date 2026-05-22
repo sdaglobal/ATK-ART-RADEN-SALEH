@@ -327,34 +327,26 @@ class="bg-indigo-600 text-white px-5 py-3 rounded-xl hover:bg-indigo-700">
     let currentSlide = 0;
 
 function slideGrafik(direction) {
+  const slider = document.getElementById('grafikSlider');
 
-  const totalData = Object.keys(dataBarangGlobal).length;
-
-  if (totalData === 0) return;
-
-  const totalSlide = Math.ceil(totalData / maxGrafikPerSlide);
+  const totalSlide =
+    slider.querySelectorAll('.snap-center').length;
 
   currentSlide += direction;
-  console.log('Klik panah');
-console.log('Current slide:', currentSlide);
-console.log('Total slide:', totalSlide);
 
-  // BATAS MIN
   if (currentSlide < 0) {
     currentSlide = totalSlide - 1;
   }
 
-  // BATAS MAX
   if (currentSlide >= totalSlide) {
     currentSlide = 0;
   }
 
-  // RENDER ULANG CHART
-  renderGrafikBarangDepartemen();
+  slider.scrollTo({
+    left: (slider.clientWidth + 32) * currentSlide,
+    behavior: 'smooth'
+  });
 }
-    let maxGrafikPerSlide = 2;
-    let dataBarangGlobal = {};
-    
 let barangList = [];
 let karyawanList = [];
 let historiMasuk = [];
@@ -1649,8 +1641,9 @@ function renderGrafikBarangDepartemen() {
   const canvas = document.getElementById('grafikBarangDepartemen');
 
   if (!canvas) return;
+
   const dataBarang = {};
-    
+
   const bulanFilter =
   document.getElementById('filterGrafikBarangBulan')?.value || '';
 
@@ -1678,7 +1671,6 @@ historiKeluar
 
     dataBarang[barang].departemen[dept] += jumlah;
   });
-  dataBarangGlobal = dataBarang;
 
   const labels = [];
   const values = [];
@@ -1699,13 +1691,9 @@ historiKeluar
 
   let colorIndex = 0;
 
-   Object.entries(dataBarang)
-  .sort((a, b) => b[1].total - a[1].total)
-  .slice(
-  currentSlide * maxGrafikPerSlide,
-  (currentSlide + 1) * maxGrafikPerSlide
-)
-  .forEach(([barang, data]) => {
+  Object.entries(dataBarang)
+    .sort((a, b) => b[1].total - a[1].total)
+    .forEach(([barang, data]) => {
 
       let deptTerbanyak = '-';
       let jumlahDept = 0;
@@ -1747,7 +1735,6 @@ historiKeluar
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      
       plugins: {
         legend: {
           display: false
@@ -1787,10 +1774,7 @@ historiKeluar
       }
     }
   });
-  console.log('Slide aktif:', currentSlide);
-console.log('Total barang:', Object.keys(dataBarangGlobal).length);
 }
-    
 function tampilkanLaporanDepartemen() {
   const tbody = document.getElementById('tabelLaporanDepartemen');
   const filterDept = document.getElementById('filterDepartemen').value;
