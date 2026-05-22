@@ -335,6 +335,9 @@ function slideGrafik(direction) {
   const totalSlide = Math.ceil(totalData / maxGrafikPerSlide);
 
   currentSlide += direction;
+  console.log('Klik panah');
+console.log('Current slide:', currentSlide);
+console.log('Total slide:', totalSlide);
 
   // BATAS MIN
   if (currentSlide < 0) {
@@ -1646,9 +1649,8 @@ function renderGrafikBarangDepartemen() {
   const canvas = document.getElementById('grafikBarangDepartemen');
 
   if (!canvas) return;
-
   const dataBarang = {};
-  
+    
   const bulanFilter =
   document.getElementById('filterGrafikBarangBulan')?.value || '';
 
@@ -1676,6 +1678,7 @@ historiKeluar
 
     dataBarang[barang].departemen[dept] += jumlah;
   });
+  dataBarangGlobal = dataBarang;
 
   const labels = [];
   const values = [];
@@ -1724,7 +1727,7 @@ historiKeluar
 
       colorIndex++;
     });
-dataBarangGlobal = dataBarang;
+
   if (window.grafikBarangDepartemenChart) {
     window.grafikBarangDepartemenChart.destroy();
   }
