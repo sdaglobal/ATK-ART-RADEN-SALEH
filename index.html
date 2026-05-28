@@ -571,14 +571,20 @@ const tanggal = sekarang.toISOString().split('T')[0];
 XLSX.writeFile(workbook, `laporan-departemen-${tanggal}.xlsx`);
 }
       async function simpanBarang() {
-  const kode = document.getElementById('kodeBarang').value;
-  const nama = document.getElementById('namaBarang').value;
-  const kategori = document.getElementById('kategoriBarang').value;
-  const satuan = document.getElementById('satuanBarang').value;
-  const stok = parseInt(document.getElementById('stokAwal').value);
+  const kode = document.getElementById('kodeBarang').value.trim();
+  const nama = document.getElementById('namaBarang').value.trim();
+  const kategori = document.getElementById('kategoriBarang').value.trim();
+  const satuan = document.getElementById('satuanBarang').value.trim();
 
-  if (!kode || !nama || !kategori || !satuan || stok < 0 || isNaN(stok)) {
+  const stok = parseInt(document.getElementById('stokAwal').value) || 0;
+
+  if (!kode || !nama || !kategori || !satuan) {
     alert('Semua data barang harus diisi');
+    return;
+  }
+
+  if (stok < 0) {
+    alert('Stok awal tidak boleh minus');
     return;
   }
 
